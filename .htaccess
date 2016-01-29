@@ -1,0 +1,12 @@
+ServerSignature Off
+php_value expose_php Off
+Header unset X-Powered-By
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [QSA,L]
+
+<Files ~ "config.php$">
+  Order Allow,Deny
+  Deny from All
+</Files>
