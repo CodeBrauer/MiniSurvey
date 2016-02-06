@@ -1,18 +1,3 @@
-<?php
-$_votes  = [];
-$noVotes = [];
-foreach ($votes as $value) {
-    if ($value['vote'] !== NULL) {
-        $_votes[] = $value['question'];
-    } else {
-        $noVotes[$value['question']] = 0;
-    }
-}
-
-$votes = array_count_values($_votes);
-arsort($votes);
-$votes = $votes + $noVotes;
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>

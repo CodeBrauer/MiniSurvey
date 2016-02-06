@@ -46,8 +46,10 @@ class Survey
     public function results($id)
     {
         if ($id === false || empty($id)) {
+            // @todo make this prettier 
             die('No ID given.');
         }
+
         $_id = $this->db->pdo->quote($id);
 
         $data['survey']    = $this->db->query('SELECT * FROM surveys WHERE id =' . $_id, true);
@@ -57,11 +59,22 @@ class Survey
             LEFT JOIN answers a
             ON s.id = a.value
             WHERE s.survey='. $_id);
+        
         $data['title'] = 'Ergebnisse: ' . $data['survey']['title'];
 
-        // var_dump($data['questions']);
-        // var_dump($data['votes']);
-        // die();
+        $_votes  = [];
+        $noVotes = [];
+        foreach ($data['votes'] as $value) {
+            if ($value['vote'] !== NULL) {
+                $_votes[] = $value['question'];
+            } else {
+                $noVotes[$value['question']] = 0;
+            }
+        }
+
+        $data['votes'] = array_count_values($_votes);
+        arsort($data['votes']);
+        $data['votes'] = $data['votes'] + $noVotes;
 
         return $data;
     }
