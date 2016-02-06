@@ -27,7 +27,6 @@ function getRoute($index = false) {
             return false;
         }
         return $route[$index];
-    } else {
-        return false;
     }
+    return false;
 }

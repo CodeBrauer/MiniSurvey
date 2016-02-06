@@ -12,7 +12,7 @@ $route    = Helper\getRoute(0);
 $route_id = Helper\getRoute(1);
 
 // navigate to /index when no route given
-if ($route == false) {
+if ($route === false) {
     header('Location: /index'); exit;
 }
 
