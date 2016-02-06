@@ -13,7 +13,7 @@ class Survey
 
     public function index()
     {
-        $data['title'] = "Umfrageauswahl";
+        $data['title'] = "Choose your survey";
         $data['list']  = $this->db->query('SELECT * FROM surveys');
         return $data;
     }
@@ -32,7 +32,7 @@ class Survey
 
         if (isset($_POST['go'])) {
             $result = $this->db->insert('answers', ['survey' => $id, 'value' => $_POST['answer']]);
-            $data['msg'] = ($result) ? 'Ihre Stimme wurde erfolgreich gespeichert!' : 'Datenbankfehler! Bitte versuchen Sie es später erneut.';
+            $data['msg'] = ($result) ? 'Your vote safely arrived.' : 'Database Error. Please try again!';
         }
 
         $data['survey']  = $this->db->query('SELECT * FROM surveys WHERE id =' . $_id, true);
@@ -59,8 +59,8 @@ class Survey
             LEFT JOIN answers a
             ON s.id = a.value
             WHERE s.survey='. $_id);
-        
-        $data['title'] = 'Ergebnisse: ' . $data['survey']['title'];
+
+        $data['title'] = 'Results: ' . $data['survey']['title'];
 
         $_votes  = [];
         $noVotes = [];

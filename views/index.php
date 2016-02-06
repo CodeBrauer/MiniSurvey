@@ -7,9 +7,9 @@
 </head>
 <body>
     <h1><?= $title ?></h1>
-    <label for="title">Umfrage auswählen:</label>
+    <label for="title">Available surveys:</label>
     <select name="title" id="title" onchange="navigateToSurvey(this)">
-        <option value="0" selected disabled>- Bitte wählen -</option>
+        <option value="0" selected disabled>- Please choose -</option>
         <?php foreach ($list as $key => $value): ?>
             <option value="<?= $value['id'] ?>"><?= $value['title'] ?></option>
         <?php endforeach ?>

@@ -25,9 +25,9 @@
                 <br>
             <?php endforeach ?>
             <br>
-            <input type="submit" name="go" value="Abstimmen">
+            <input type="submit" name="go" value="Vote">
             <br><br>
-            <a href="<?= $results_link ?>">Ergebnisse anzeigen</a>
+            <a href="<?= $results_link ?>">Show results</a>
         </form>
     </div>
 </body>
