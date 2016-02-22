@@ -15,6 +15,13 @@ class Survey
     {
         $data['title'] = "Choose your survey";
         $data['list']  = $this->db->query('SELECT * FROM surveys');
+        foreach ($data['list'] as $key => $list) {
+            if (isset($_COOKIE['survey_answered'][$list['id']])) {
+                $data['list'][$key]['answered'] = json_decode($_COOKIE['survey_answered'][$list['id']])->answered;
+            } else {
+                $data['list'][$key]['answered'] = false;
+            }
+        }
         return $data;
     }
 
@@ -31,14 +38,22 @@ class Survey
         $_id = $this->db->pdo->quote($id);
 
         if (isset($_POST['go'])) {
-            $result = $this->db->insert('answers', ['survey' => $id, 'value' => $_POST['answer']]);
-            $data['msg'] = ($result) ? 'Your vote safely arrived.' : 'Database Error. Please try again!';
+            if (isset($_COOKIE['survey_answered'][$id])) {
+                $data['msg'] = "You've already voted for this post (@ " . date('d.m.Y H:i:s', json_decode($_COOKIE['survey_answered'][$id])->answered) . ")";
+            } else {
+                $result      = $this->db->insert('answers', ['survey' => $id, 'value' => $_POST['answer']]);
+                $data['msg'] = ($result) ? 'Your vote safely arrived.' : 'Database Error. Please try again!';
+                
+                $cookie_value = json_encode(['answered' => time(), 'survey_id' => $id, 'answer_id' => $_POST['answer']]);
+                // check this line after unix timestamp overflow (2038)
+                setcookie("survey_answered[$id]", $cookie_value, pow(2, 31), '/');
+            }
         }
 
-        $data['survey']  = $this->db->query('SELECT * FROM surveys WHERE id =' . $_id, true);
+        $data['survey']    = $this->db->query('SELECT * FROM surveys WHERE id =' . $_id, true);
         $data['questions'] = $this->db->query('SELECT * FROM survey_questions WHERE survey =' . $_id);
 
-        $data['title'] = $data['survey']['title'];
+        $data['title']        = $data['survey']['title'];
         $data['results_link'] = "/results/$id";
         return $data;
     }
