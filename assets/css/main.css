@@ -3,7 +3,7 @@
 }
 
 body {
-    font-family: sans-serif;
+    font-family: 'Fira Sans', sans-serif;
 }
 
 fieldset {
@@ -29,21 +29,41 @@ a {
     transition: border-color .1s;
 }
 
-a:hover {border-color: #ccc;}
+a:hover {
+    border-color: #ccc;
+}
 
 h1.title {
     width: 100%;
-    border-bottom: 3px solid;
-    padding: 5px 0;
+    border-bottom: 2px solid;
+    padding: 13px 0;
     text-transform: uppercase;
-    border-top: 3px solid;
+    border-top: 2px solid;
     text-align: center;
+    font-weight: 200;
+}
+
+h2:before {
+    content: '_';
 }
 
 .container {
     max-width: 800px;
     width: 100%;
     margin: 20px auto 10px;
+}
+
+.s50 {
+    width: 50%;
+    float: left;
+    padding: 15px;
+}
+
+@media only screen and (max-width:650px) {
+    .s50 {
+        width: 100%;
+        float: none;
+    }
 }
 
 input[type="submit"] {
@@ -69,4 +89,57 @@ select[onchange*="navigateToSurvey"] {
     display: block;
     height: 36px;
     font-size: 14px;
+}
+
+.login input[type="text"],
+.login input[type="password"],
+.login input[type="email"] {
+    width: 100%;
+    height: 32px;
+    padding: 0 0px 0 5px;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+meter {
+    display: inline-block;
+    width: 200px;
+}
+
+nav {
+    position: fixed;
+    bottom: 0;
+    right: 10px;
+}
+
+nav ul {
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    float: left;
+    width 30px;
+    margin-right: 15px;
+}
+
+nav ul li a {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    border-bottom: 0;
+}
+
+nav ul li a[disabled] {
+    cursor: help;
+    color: #aaa;
+}
+
+.create input[type="text"] {
+    width: 100%;
+    padding: 6px;
+    font-size: 16px;
+    margin-bottom: 8px;
+    max-width: 630px;
 }
