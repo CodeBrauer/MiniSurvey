@@ -8,7 +8,7 @@ function addInput() {
     last_option = parseInt(last_option) + 1;
     var new_option = '<input type="text" id="option-'+ last_option +'" name="option[]" required placeholder="Answer '+ last_option +'"><br>';
     console.log(new_option);
-    document.querySelector('#moreOptions').innerHTML += new_option;
+    document.querySelector('#moreOptions').insertAdjacentHTML('beforeend', new_option);
 }
 
 
