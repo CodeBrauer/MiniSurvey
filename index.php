@@ -6,7 +6,7 @@ require_once 'functions.php';
 spl_autoload_register('Helper\autoLoadClass');
 
 // set exception handler
-set_exception_handler(['Error', 'handle']);
+set_exception_handler(['ErrorHandler', 'handle']);
 
 $route    = Helper\getRoute(0);
 $route_id = Helper\getRoute(1);

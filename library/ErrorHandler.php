@@ -3,9 +3,9 @@
 /**
 * Error Handler
 */
-class Error
+class ErrorHandler
 {
-    public static function handle(Exception $e)
+    public static function handle($e)
     {
         ?>
         <!DOCTYPE html>
