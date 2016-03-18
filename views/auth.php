@@ -11,9 +11,9 @@
             <h2>Login</h2>
             <form action="" method="post">
                 <input type="hidden" name="form" value="login">
-                <input type="text" name="username" id="username" placeholder="username" tabindex="1">
+                <input type="text" name="username" id="username" placeholder="username" required tabindex="1">
                 <br>
-                <input type="password" name="password" id="password" placeholder="password" tabindex="2">
+                <input type="password" name="password" id="password" placeholder="password" required tabindex="2">
                 <br><br>
                 <input type="submit" value="Login" tabindex="3">
             </form>
@@ -22,9 +22,9 @@
             <h2>Register</h2>
             <form action="" method="post">
                 <input type="hidden" name="form" value="register">
-                <input type="text" name="username" id="username" placeholder="username" tabindex="4">
+                <input type="text" name="username" id="username" placeholder="username" required tabindex="4">
                 <br>
-                <input type="password" name="password" id="password" placeholder="password" tabindex="5">
+                <input type="password" name="password" id="password" placeholder="password" required tabindex="5">
                 <br><br>
                 <input type="submit" value="Register" tabindex="6">
             </form>

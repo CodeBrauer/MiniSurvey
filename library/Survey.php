@@ -29,8 +29,12 @@ class Survey
             }
 
             if ($_POST['form'] == 'register') {
-                $register    = $this->auth->register($_POST['username'], $_POST['password']);
-                $data['msg'] = $register;
+                if (empty($_POST['username']) || empty($_POST['password'])) {
+                    $data['msg'] = [false, 'Please fill out the fields.'];
+                } else {
+                    $register    = $this->auth->register($_POST['username'], $_POST['password']);
+                    $data['msg'] = $register;
+                }
             }
         }
         return $data;
