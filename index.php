@@ -8,11 +8,17 @@ spl_autoload_register('Helper\autoLoadClass');
 // set exception handler
 set_exception_handler(['ErrorHandler', 'handle']);
 
+$auth = new Auth();
+
 $route    = Helper\getRoute(0);
 $route_id = Helper\getRoute(1);
 
+if (!$auth->isAuthed() && $route !== "auth") {
+    header('Location: /auth'); exit;
+}
+
 // navigate to /index when no route given
-if ($route === false) {
+if ($route === false && $auth->isAuthed() === false) {
     header('Location: /index'); exit;
 }
 
