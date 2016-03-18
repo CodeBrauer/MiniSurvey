@@ -18,7 +18,7 @@ if (!$auth->isAuthed() && $route !== "auth") {
 }
 
 // navigate to /index when no route given
-if ($route === false && $auth->isAuthed() === false) {
+if ($route === false) {
     header('Location: /index'); exit;
 }
 
