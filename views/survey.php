@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title><?= $title ?></title>
-    <link rel="stylesheet" href="/assets/css/main.css">
-</head>
-<body>
+<?php include '_header.php'; ?>
     <div class="container">
         <div class="survey">
         <h1 class="title"><?= $title ?></h1>
@@ -33,9 +26,4 @@
             </form>
         </div>
     </div>
-    <script src="/assets/js/main.js"></script>
-    <script>
-    highlightAnswer();
-    </script>
-</body>
-</html>
+<?php include '_footer.php'; ?>
