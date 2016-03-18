@@ -1,3 +1,17 @@
+// highlightAnswer();
+
+// -----------------------------------------------------------------------------
+
+function addInput() {
+    var options = document.querySelectorAll('[id*="option-"]');
+    var last_option = options[options.length - 1].getAttribute('id').split('-')[1];
+    last_option = parseInt(last_option) + 1;
+    var new_option = '<input type="text" id="option-'+ last_option +'" name="option[]" required placeholder="Answer '+ last_option +'"><br>';
+    console.log(new_option);
+    document.querySelector('#moreOptions').innerHTML += new_option;
+}
+
+
 function navigateToSurvey(select) {
     window.location.href += '/../survey/' + select.value;
 }

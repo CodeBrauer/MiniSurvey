@@ -8,16 +8,60 @@ class Survey
 
     public function __construct()
     {
-        $this->db = new Database();
+        $this->db      = new Database();
+        $this->auth    = new Auth();
+        $this->session = new Session();
+    }
+
+    public function auth()
+    {
+        $data['title'] = "Login / Register";
+        if (isset($_POST['form'])) {
+            if ($_POST['form'] == 'login') {
+                $login       = $this->auth->auth($_POST['username'], $_POST['password']);
+                $data['msg'] = $login;
+                if ($login[0] === true) {
+                    $this->session->set('logged_in', true);
+                    $this->session->set('user_id', $this->auth->getUserData($_POST['username'])['id']);
+                    $this->session->set('username', $_POST['username']);
+                    header('Location: /index');
+                }
+            }
+
+            if ($_POST['form'] == 'register') {
+                $register    = $this->auth->register($_POST['username'], $_POST['password']);
+                $data['msg'] = $register;
+            }
+        }
+        return $data;
+    }
+
+    public function logout()
+    {
+        $this->auth->logout();
+        header('Location: /index');
     }
 
     public function index()
     {
         $data['title'] = "Choose your survey";
-        $data['list']  = $this->db->query('SELECT * FROM surveys');
+        $data['list']  = $this->db->query('SELECT s.id,title,s.created,username FROM surveys s JOIN users u ON s.created_by = u.id');
+
+        if ($data['list'] === false)
+            $data['list'] = [];
+
+        $_my_answers = $this->db->query("SELECT survey FROM answers WHERE created_by = '" . $this->session->get('user_id') . "'");
+        $my_answers = [];
+
+        if (!empty($_my_answers)) {
+            array_walk_recursive($_my_answers, function($a) use (&$my_answers) {
+                $my_answers[] = $a;
+            });
+        }
+
         foreach ($data['list'] as $key => $list) {
-            if (isset($_COOKIE['survey_answered'][$list['id']])) {
-                $data['list'][$key]['answered'] = json_decode($_COOKIE['survey_answered'][$list['id']])->answered;
+            if (in_array($list['id'], $my_answers)) {
+                $data['list'][$key]['answered'] = $this->db->query("SELECT created from answers WHERE created_by = '".$this->session->get('user_id')."' AND survey = '".$list['id']."'", true)['created'];
             } else {
                 $data['list'][$key]['answered'] = false;
             }
@@ -27,7 +71,34 @@ class Survey
 
     public function create()
     {
-        die('Not implemented yet.');
+        $data['title'] = "Create your survey";
+
+        if (!$this->auth->isAdmin($this->session->get('user_id'))) {
+// throw new Exception("User is not an administrator");
+            die('<strong>User is not an administrator - please leave.</strong><br>(You can make yourself an admin if you have access to the database)');
+        }
+
+        if (isset($_POST['title']) && isset($_POST['option'])) {
+            $this->db->insert('surveys', [
+                'title'      => trim($_POST['title']),
+                'created_by' => $this->session->get('user_id')
+                ]);
+            $survey_id = $this->db->pdo->lastInsertId();
+
+            foreach ($_POST['option'] as $option) {
+                if (empty($option)) {
+                    continue;
+                }
+                $this->db->insert('survey_options', [
+                    'survey'   => $survey_id,
+                    'question' => trim($option)
+                    ]);
+            }
+
+            header('Location: /survey/' . $survey_id);
+        }
+
+        return $data;
     }
 
     public function survey($id = false)
@@ -38,20 +109,32 @@ class Survey
         $_id = $this->db->pdo->quote($id);
 
         if (isset($_POST['go'])) {
-            if (isset($_COOKIE['survey_answered'][$id])) {
-                $data['msg'] = "You've already voted for this post (@ " . date('d.m.Y H:i:s', json_decode($_COOKIE['survey_answered'][$id])->answered) . ")";
+            $user_id      = $this->session->get('user_id');
+            $answered = $this->db->query("SELECT COUNT(id) as `count`, created FROM answers WHERE survey = '$id' AND created_by = '$user_id'", true);
+            $has_answered = (bool)$answered['count'];
+
+            if ($has_answered) {
+                $data['msg'] = "You've already voted for this post (@ " . date('d.m.Y H:i:s', strtotime($answered['created']) ) . ")";
             } else {
-                $result      = $this->db->insert('answers', ['survey' => $id, 'value' => $_POST['answer']]);
+                $result      = $this->db->insert('answers', [
+                    'survey'     => $id,
+                    'value'      => $_POST['answer'],
+                    'created_by' => $this->session->get('user_id')
+                    ]);
                 $data['msg'] = ($result) ? 'Your vote safely arrived.' : 'Database Error. Please try again!';
-                
-                $cookie_value = json_encode(['answered' => time(), 'survey_id' => $id, 'answer_id' => $_POST['answer']]);
+
+                //-cookie- $cookie_value = json_encode(['answered' => time(), 'survey_id' => $id, 'answer_id' => $_POST['answer']]);
                 // check this line after unix timestamp overflow (2038)
-                setcookie("survey_answered[$id]", $cookie_value, pow(2, 31), '/');
+                //-cookie- setcookie("survey_answered[$id]", $cookie_value, pow(2, 31), '/');
             }
         }
 
         $data['survey']    = $this->db->query('SELECT * FROM surveys WHERE id =' . $_id, true);
-        $data['questions'] = $this->db->query('SELECT * FROM survey_questions WHERE survey =' . $_id);
+        $data['questions'] = $this->db->query('SELECT * FROM survey_options WHERE survey =' . $_id);
+
+        if (!$data['survey']) {
+            header('Location: /404');
+        }
 
         $data['title']        = $data['survey']['title'];
         $data['results_link'] = "/results/$id";
@@ -68,9 +151,14 @@ class Survey
         $_id = $this->db->pdo->quote($id);
 
         $data['survey']    = $this->db->query('SELECT * FROM surveys WHERE id =' . $_id, true);
-        $data['questions'] = $this->db->query('SELECT * FROM survey_questions WHERE survey =' . $_id);
+
+        if (!$data['survey']) {
+            header('Location: /404');
+        }
+
+        $data['questions'] = $this->db->query('SELECT * FROM survey_options WHERE survey =' . $_id);
         $data['answers']   = $this->db->query('SELECT * FROM answers WHERE survey =' . $_id);
-        $data['votes']     = $this->db->query('SELECT a.value AS vote , s.question FROM survey_questions s
+        $data['votes']     = $this->db->query('SELECT a.value AS vote , s.question FROM survey_options s
             LEFT JOIN answers a
             ON s.id = a.value
             WHERE s.survey='. $_id);
