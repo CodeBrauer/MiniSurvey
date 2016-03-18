@@ -18,7 +18,12 @@ class Database
     }
     
     public function query($sql, $single = false) {
-        $data = $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        
+        $q = $this->pdo->query($sql);
+        if ($q === false)
+            throw new Exception("Database error - PDO::query fails");
+
+        $data = $q->fetchAll(PDO::FETCH_ASSOC);
         return !empty($data) ? $single ? $data[0] : $data : false;
     }
 
@@ -50,6 +55,9 @@ class Database
 
     public function delete($table, $id = false)
     {
-        # code...
+        die('not implemented yet.');
+        if (empty($table) || empty($data)) {
+            # code...
+        }
     }
 }
