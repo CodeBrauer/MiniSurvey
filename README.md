@@ -1,8 +1,6 @@
 # MiniSurvey
 a school project
 
-Demo: http://survey.gabrielw.de
-
 - [x] Register
 - [x] Login
 - [x] Create survey (if user is admin)
